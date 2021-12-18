@@ -68,6 +68,29 @@ class PostRepositoryImpl: PostRepository {
             .close()
     }
 
+    override fun likeByIdAsync(id: Long, callback: PostRepository.LikeByIdCallback) {
+        val request: Request = Request.Builder()
+            .post(gson.toJson(id).toRequestBody())
+            .url("${BASE_URL}/api/posts/$id/likes")
+            .build()
+
+        client.newCall(request)
+            .enqueue(object : Callback{
+                override fun onResponse(call: Call, response: Response) {
+                    val body = response.body?.string() ?: throw RuntimeException("body is null")
+                    try {
+                        callback.onSuccess(gson.fromJson(body, typeToken.type))
+                    } catch (e: Exception) {
+                        callback.onError(e)
+                    }
+                }
+
+                override fun onFailure(call: Call, e: IOException) {
+                   callback.onError(e)
+                }
+            })
+    }
+
         override fun unlikeById(id: Long) {
         val request2: Request = Request.Builder()
             .delete()
@@ -77,6 +100,29 @@ class PostRepositoryImpl: PostRepository {
         client.newCall(request2)
             .execute()
             .close()
+    }
+
+    override fun unLikeByIdAsync(id: Long, callback: PostRepository.UnLikeByIdCallback) {
+        val request2: Request = Request.Builder()
+            .delete()
+            .url("${BASE_URL}/api/posts/$id/likes")
+            .build()
+
+        client.newCall(request2)
+            .enqueue(object : Callback{
+                override fun onResponse(call: Call, response: Response) {
+                    val body = response.body?.string() ?: throw RuntimeException("body is null")
+                    try {
+                        callback.onSuccess(gson.fromJson(body, typeToken.type))
+                    } catch (e: Exception) {
+                        callback.onError(e)
+                    }
+                }
+
+                override fun onFailure(call: Call, e: IOException) {
+                    callback.onError(e)
+                }
+            })
     }
 
     override fun save(post: Post) {
@@ -99,7 +145,7 @@ class PostRepositoryImpl: PostRepository {
         client.newCall(request)
             .enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {
-                    callback.onSuccess(post)
+                callback.onSuccess(post)
                 }
 
                 override fun onFailure(call: Call, e: IOException) {

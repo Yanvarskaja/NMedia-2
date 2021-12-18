@@ -31,4 +31,17 @@ interface PostRepository {
         fun onError(e: Exception) {}
     }
 
+    fun likeByIdAsync(id: Long, callback: LikeByIdCallback)
+
+    interface LikeByIdCallback {
+        fun onSuccess(post: Post) {}
+        fun onError(e: Exception) {}
+    }
+
+    fun unLikeByIdAsync(id: Long, callback: UnLikeByIdCallback)
+
+    interface UnLikeByIdCallback {
+        fun onSuccess(post: Post) {}
+        fun onError(e: Exception) {}
+    }
 }
