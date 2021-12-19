@@ -6,6 +6,7 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
@@ -15,6 +16,7 @@ interface OnInteractionListener {
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+
 }
 
 class PostsAdapter(
@@ -46,6 +48,13 @@ class PostViewHolder(
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
+
+//            var index = 0
+//            val urls = listOf("netology.jpg", "sber.jpg", "tcs.jpg", "404.png")
+            val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
+            Glide.with(avatar)
+                .load(url)
+                .into(avatar)
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
