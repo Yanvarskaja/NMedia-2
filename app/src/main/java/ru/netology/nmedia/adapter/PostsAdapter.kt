@@ -1,14 +1,17 @@
 package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.nmedia.dto.AttachmentType
 import ru.netology.nmedia.dto.Post
 
 interface OnInteractionListener {
@@ -48,44 +51,51 @@ class PostViewHolder(
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
+            attachmentImage.visibility = if (post.attachment != null) View.VISIBLE else View.GONE
 
-//            var index = 0
-//            val urls = listOf("netology.jpg", "sber.jpg", "tcs.jpg", "404.png")
             val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
             Glide.with(avatar)
                 .load(url)
+                .circleCrop()
+                .timeout(10_000)
                 .into(avatar)
 
-            menu.setOnClickListener {
-                PopupMenu(it.context, it).apply {
-                    inflate(R.menu.options_post)
-                    setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.remove -> {
-                                onInteractionListener.onRemove(post)
-                                true
-                            }
-                            R.id.edit -> {
-                                onInteractionListener.onEdit(post)
-                                true
-                            }
+            Glide.with(binding.attachmentImage)
+                .load("http://10.0.2.2:9999/images/${post.attachment?.url}")
+                .timeout(10_000)
+                .into(binding.attachmentImage)
 
-                            else -> false
+                menu.setOnClickListener {
+                    PopupMenu(it.context, it).apply {
+                        inflate(R.menu.options_post)
+                        setOnMenuItemClickListener { item ->
+                            when (item.itemId) {
+                                R.id.remove -> {
+                                    onInteractionListener.onRemove(post)
+                                    true
+                                }
+                                R.id.edit -> {
+                                    onInteractionListener.onEdit(post)
+                                    true
+                                }
+
+                                else -> false
+                            }
                         }
-                    }
-                }.show()
-            }
+                    }.show()
+                }
 
-            like.setOnClickListener {
-                onInteractionListener.onLike(post)
-            }
+                like.setOnClickListener {
+                    onInteractionListener.onLike(post)
+                }
 
-            share.setOnClickListener {
-                onInteractionListener.onShare(post)
+                share.setOnClickListener {
+                    onInteractionListener.onShare(post)
+                }
             }
         }
     }
-}
+
 
 class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
