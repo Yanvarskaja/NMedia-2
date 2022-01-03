@@ -1,14 +1,12 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.*
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.io.IOException
-import javax.security.auth.callback.Callback
-import kotlin.concurrent.thread
 
 private val empty = Post(
     id = 0,
@@ -82,7 +80,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                         super.onSuccess(post)
                     }
                     override fun onError(e: Exception) {
-                      FeedModel(error = true)
+                      Toast.makeText(getApplication(), "Error", Toast.LENGTH_SHORT).show()
                     }
                 })
 
@@ -111,7 +109,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                         _data.postValue(_data.value?.copy(posts = posts))
                     }
                     override fun onError(e: Exception) {
-                        FeedModel(error = true)
+                        Toast.makeText(getApplication(), "Error", Toast.LENGTH_SHORT).show()
                     }
                 })
             } else {
@@ -120,7 +118,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                         _data.postValue(_data.value?.copy(posts = posts))
                     }
                     override fun onError(e: Exception) {
-                        FeedModel(error = true)
+                        Toast.makeText(getApplication(), "Error", Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -151,11 +149,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 )
             )
                 repository.removeByIdAsync(id, object : PostRepository.RemoveByIdCallback {
-                    override fun onSuccess(posts: List<Post>) {
+                    override fun onSuccess(posts: Unit) {
                         _data.postValue(_data.value?.copy(posts = old))
                     }
                     override fun onError(e: Exception) {
-                        FeedModel(error = true)
+                        Toast.makeText(getApplication(), "Error", Toast.LENGTH_SHORT).show()
                     }
                 })
             }
